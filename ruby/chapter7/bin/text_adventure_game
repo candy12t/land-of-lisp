@@ -1,0 +1,29 @@
+#! /usr/bin/env ruby
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'text_adventure_game'
+
+wizard_nodes = {
+  living_room: [%w(you are in the living-room. a wizard is snoring loudly on the couch.)],
+  garden: [%w(you are in a beautiful garden. there is a well in front of you.)],
+  attic: [%w(you are in the attic. there is a giant welding torch in the corner.)],
+}
+
+wizard_edges = {
+  living_room: [%w(garden west door), %w(attic upstairs ladder)],
+  garden: [%w(living_room east door)],
+  attic: [%w(living_room downstairs ladder)],
+}
+
+objects = %i(whiskey bucket frog chain)
+
+object_locations = {
+  whiskey: :living_room,
+  bucket: :living_room,
+  chain: :garden,
+  frog: :garden,
+}
+
+graphviz = TextAdventureGame::Graph::Graphviz.new(wizard_nodes, wizard_edges)
+graphviz.graph_to_png('wizard.dot')
+# TextAdventureGame::Command.run(ARGV)
