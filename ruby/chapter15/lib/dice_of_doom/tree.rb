@@ -19,19 +19,6 @@ module DiceOfDoom
       @child_tree.unshift(next_turn_tree) unless first_move
     end
 
-    # @return [String]
-    def draw
-      message = ""
-      @board.each_slice(DiceOfDoom::BOARD_SIZE).with_index do |row, idx|
-        message += "\s\s" * (DiceOfDoom::BOARD_SIZE - idx)
-        row.each do |hex|
-          message += "#{DiceOfDoom::Player.letter(hex.player)}-#{hex.dice_count} "
-        end
-        message += "\n"
-      end
-      return message
-    end
-
     # @return [Array<DiceOfDoom::Tree>]
     def attacking_moves
       (0...DiceOfDoom::BOARD_HEXNUM)
@@ -43,22 +30,9 @@ module DiceOfDoom
     # @return [Array<DiceOfDoom::Tree>]
     def attacking_moves_from_src(src)
       can_attack = ->(dst) { hex_player(dst) && hex_player(dst) != @player && hex_dice(src) > hex_dice(dst) }
-      neighbors(src)
+      DiceOfDoom::Board.neighbors(src)
         .select { |dst| can_attack.call(dst) }
         .map { |dst| next_turn_tree_after_attack(src, dst)}
-    end
-
-    # @param pos [Integer]
-    # @return [Array<Integer>]
-    def neighbors(pos)
-      up = pos - DiceOfDoom::BOARD_SIZE
-      down = pos + DiceOfDoom::BOARD_SIZE
-
-      positions = [up, down]
-      positions.push(up - 1, pos - 1) unless pos % DiceOfDoom::BOARD_SIZE == 0
-      positions.push(down + 1, pos + 1) unless (pos + 1) % DiceOfDoom::BOARD_SIZE == 0
-
-      return positions.select { |p| p >= 0 && p < DiceOfDoom::BOARD_HEXNUM }
     end
 
     # @return [Array<DiceOfDoom::Hex>]

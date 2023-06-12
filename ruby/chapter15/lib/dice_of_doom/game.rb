@@ -4,11 +4,13 @@ module DiceOfDoom
     attr_reader :tree
 
     def initialize
-      board = Array.new(DiceOfDoom::BOARD_HEXNUM) do |idx|
-        player = rand(DiceOfDoom::NUM_PLAYERS)
-        dice_count = rand(DiceOfDoom::MAX_DICE) + 1
-        DiceOfDoom::Hex.new(player, dice_count)
-      end
+      # board = Array.new(DiceOfDoom::BOARD_HEXNUM) do |idx|
+      #   player = rand(DiceOfDoom::NUM_PLAYERS)
+      #   dice_count = rand(DiceOfDoom::MAX_DICE) + 1
+      #   DiceOfDoom::Hex.new(player, dice_count)
+      # end
+      f = ->(p, d) { DiceOfDoom::Hex.new(p, d)}
+      board = [f.call(0, 3), f.call(0, 3), f.call(1, 3), f.call(1, 1)]
       @tree = DiceOfDoom::Tree.new(board, 0, 0, true)
     end
 
@@ -25,7 +27,7 @@ module DiceOfDoom
     def print_info
       puts
       puts "current player = #{DiceOfDoom::Player.letter(@tree.player)}"
-      puts @tree.draw
+      puts DiceOfDoom::Board.draw(@tree.board)
     end
 
     def handle_human
