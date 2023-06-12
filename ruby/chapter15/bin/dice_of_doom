@@ -13,98 +13,65 @@ def gen_board
 end
 
 def player_letter(n)
-  if n < 0 or 24 < n
-    raise StandardError.new('Error')
-  end
-  return (n + 97).chr
+  return (n + 65).chr
 end
 
-# TODO: refactor
 def draw_board(board)
-  # str = ''
-  (0...BOARD_SIZE).each do |y|
-    # (BOARD_SIZE - y).times { str += "  " }
-    (BOARD_SIZE - y).times { print "  " }
-
-    (0...BOARD_SIZE).each do |x|
-      hex = board[x + BOARD_SIZE * y]
-      # str += "#{player_letter(hex[0])}-#{hex[1]} "
-      print "#{player_letter(hex[0])}-#{hex[1]} "
+  result = ""
+  board.each_slice(BOARD_SIZE).with_index do |row, idx|
+    result += "  " * (BOARD_SIZE - idx)
+    row.each do |hex|
+      result += "#{player_letter(hex[0])}-#{hex[1]} "
     end
-    # str += "\n"
-    print "\n"
+    result += "\n"
   end
-
-  # return str
+  return result
 end
 
 def game_tree(board, player, spare_dice, first_move)
-  return [player, board, add_passing_move(board, player, spare_dice, first_move, attacking_moves(board, player, spare_dice))]
+  moves = attacking_moves(board, player, spare_dice)
+  moves.unshift([nil, next_turn_tree(board, player, spare_dice)]) unless first_move
+  return [player, board, moves]
 end
 
-def add_passing_move(board, player, spare_dice, first_move, moves)
-  if first_move
-    moves
-  else
-    moves.unshift([nil, game_tree(add_new_dice(board, player, spare_dice - 1), (player + 1) % NUM_PLAYERS, 0, true)])
-  end
+def next_turn_tree(board, player, spare_dice)
+  board = add_new_dice(board, player, spare_dice - 1)
+  player = (player + 1) % NUM_PLAYERS
+  return game_tree(board, player, 0, true)
 end
 
-# board -> [[Palyer, DiceCount]]
-# example [[0, 3], [1, 2], [1, 3], [0, 1]]
 def attacking_moves(board, cur_player, spare_dice)
   player = ->(pos) { board[pos][0] }
   dice = ->(pos) { board[pos][1] }
 
-  src_moves = (0...BOARD_HEXNUM).select { |src| player[src] == cur_player }
+  (0...BOARD_HEXNUM)
+    .select { |src| player[src] == cur_player}
+    .flat_map { |src| attacking_moves_from_src(board, src, cur_player, spare_dice, player, dice) }
+end
 
-  src_moves.flat_map do |src|
-    neighbors(src).flat_map do |dst|
-      if !player[dst].nil? && player[dst] != cur_player && dice[src] > dice[dst]
-        [[
-          [src, dst],
-          game_tree(
-            board_attack(board, cur_player, src, dst, dice[src]),
-            cur_player,
-            spare_dice + dice[dst],
-            nil
-          )
-        ]]
-      else
-        []
-      end
-    end
-  end
+def attacking_moves_from_src(board, src, cur_player, spare_dice, player, dice)
+  can_attack = ->(dst) { player[dst] && player[dst] != cur_player && dice[src] > dice[dst] }
+  neighbors(src)
+    .select { |dst| can_attack.call(dst) }
+    .map { |dst| [[src, dst], game_tree(board_attack(board, cur_player, src, dst, dice[src]), cur_player, spare_dice + dice[dst], false)]}
 end
 
 def neighbors(pos)
   up = pos - BOARD_SIZE
   down = pos + BOARD_SIZE
 
-  result = [up, down]
-
-  unless pos % BOARD_SIZE == 0
-    result << up - 1
-    result << pos - 1
-  end
-
-  unless (pos + 1) % BOARD_SIZE == 0
-    result << pos + 1
-    result << down + 1
-  end
-
-  result.select { |p| p >= 0 && p < BOARD_HEXNUM }
+  positions = [up, down]
+  positions.push(up - 1, pos - 1) unless pos % BOARD_SIZE == 0
+  positions.push(down + 1, pos + 1) unless (pos + 1) % BOARD_SIZE == 0
+  positions.select { |p| p >= 0 && p < BOARD_HEXNUM }
 end
 
 def board_attack(board, player, src, dst, dice)
   board.each_with_index.map do |hex, pos|
     case pos
-    when src
-      [player, 1]
-    when dst
-      [player, dice - 1]
-    else
-      hex
+    when src then [player, 1]
+    when dst then [player, dice - 1]
+    else hex
     end
   end
 end
@@ -131,7 +98,7 @@ end
 
 def play_vs_human(tree)
   print_info(tree)
-  if tree[2]
+  if tree[2] && !tree[2].empty?
     play_vs_human(handle_human(tree))
   else
     announce_winner(tree[1])
@@ -141,7 +108,7 @@ end
 def print_info(tree)
   puts
   puts "current player = #{player_letter(tree[0])}"
-  draw_board(tree[1])
+  puts draw_board(tree[1])
 end
 
 def handle_human(tree)
@@ -165,7 +132,7 @@ def handle_human(tree)
 end
 
 def winners(board)
-  tally = board.flatten.map(&:first)
+  tally = board.map(&:first)
   totals = tally.uniq.map { |player| [player, tally.count(player)] }
   best = totals.map(&:last).max
   totals.select { |x| x.last == best }.map(&:first)
@@ -181,7 +148,6 @@ def announce_winner(board)
   end
 end
 
-# play_vs_human(game_tree(gen_board, 0, 0, true))
-p game_tree([[0, 1], [1, 1], [0, 2], [1, 1]], 0, 0, true)
-# p board_attack([[0, 3], [0, 3], [1, 3], [1, 1]], 0, 1, 3, 3)
-# p add_new_dice([[0, 1], [1, 3], [0, 2], [1, 1]], 0, 2)
+# board = gen_board
+# tree = game_tree(board, 0, 0, true)
+# play_vs_human(tree)
