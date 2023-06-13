@@ -24,6 +24,21 @@ module DiceOfDoom
       end
     end
 
+    def play_vs_computer
+      print_info
+      if @tree.child_tree.nil? || @tree.child_tree.empty?
+        announce_winner
+      elsif @tree.player == 0
+        handle_human
+        play_vs_computer
+      else
+        handle_computer
+        play_vs_computer
+      end
+    end
+
+    private
+
     def print_info
       puts
       puts "current player = #{DiceOfDoom::Player.letter(@tree.player)}"
@@ -47,6 +62,32 @@ module DiceOfDoom
 
       puts
       @tree = @tree.child_tree[gets.chomp.to_i - 1]
+    end
+
+    def handle_computer
+      ratings = get_ratings(@tree, @tree.player)
+      @tree = tree.child_tree[ratings.index(ratings.max)]
+    end
+
+    def get_ratings(tree, player)
+      tree.child_tree.map { |tree| rate_position(tree, player) }.flatten
+    end
+
+    def rate_position(tree, player)
+      if tree.child_tree && !tree.child_tree.empty?
+        if tree.player == player
+          get_ratings(tree, player).max
+        else
+          get_ratings(tree, player).min
+        end
+      else
+        w = winners
+        if w.include?(player)
+          1.0 / w.length
+        else
+          0
+        end
+      end
     end
 
     def winners
