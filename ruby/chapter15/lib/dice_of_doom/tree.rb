@@ -39,8 +39,8 @@ module DiceOfDoom
     def board_attack(src, dst, dice)
       @board.each_with_index.map do |hex, position|
         case position
-        when src then DiceOfDoom::Hex.new(@player, 1)
-        when dst then DiceOfDoom::Hex.new(@player, dice - 1)
+        when src then DiceOfDoom::Hex.get_or_create(player: @player, dice_count: 1)
+        when dst then DiceOfDoom::Hex.get_or_create(player: @player, dice_count: dice - 1)
         else hex
         end
       end
@@ -57,7 +57,7 @@ module DiceOfDoom
           cur_player = board.first.player
           cur_dice = board.first.dice_count
           if cur_player == @player && cur_dice < DiceOfDoom::MAX_DICE
-            [DiceOfDoom::Hex.new(cur_player, cur_dice + 1)].concat(f.call(board.drop(1), dice_count - 1))
+            [DiceOfDoom::Hex.get_or_create(player: cur_player, dice_count: cur_dice + 1)].concat(f.call(board.drop(1), dice_count - 1))
           else
             [board.first].concat(f.call(board.drop(1), dice_count))
           end

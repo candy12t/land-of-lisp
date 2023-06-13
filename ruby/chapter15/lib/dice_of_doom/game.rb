@@ -9,7 +9,7 @@ module DiceOfDoom
       #   dice_count = rand(DiceOfDoom::MAX_DICE) + 1
       #   DiceOfDoom::Hex.new(player, dice_count)
       # end
-      f = ->(p, d) { DiceOfDoom::Hex.new(p, d)}
+      f = ->(p, d) { DiceOfDoom::Hex.get_or_create(player: p, dice_count: d) }
       board = [f.call(0, 3), f.call(0, 3), f.call(1, 3), f.call(1, 1)]
       @tree = DiceOfDoom::Tree.new(board, 0, 0, true)
     end
