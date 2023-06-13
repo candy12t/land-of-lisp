@@ -1,6 +1,8 @@
 module DiceOfDoom
   class Board
 
+    @@positions = {}
+
     class << self
 
       # @param board [Array<DiceOfDoom::Hex>]
@@ -20,6 +22,12 @@ module DiceOfDoom
       # @param pos [Integer]
       # @return [Array<Integer>]
       def neighbors(pos)
+        return @@positions[pos] ||= calculate_neighbors(pos)
+      end
+
+      private
+
+      def calculate_neighbors(pos)
         up = pos - DiceOfDoom::BOARD_SIZE
         down = pos + DiceOfDoom::BOARD_SIZE
 
