@@ -47,24 +47,23 @@ module DiceOfDoom
     end
 
     def add_new_dice(spare_dice)
-      f = ->(board, dice_count) {
+      f = ->(board, dice_count, acc) {
         case
         when board.nil?
-          nil
+          acc
         when dice_count.zero?
-          board
+          acc + board
         else
           cur_player = board.first.player
           cur_dice = board.first.dice_count
           if cur_player == @player && cur_dice < DiceOfDoom::MAX_DICE
-            [DiceOfDoom::Hex.get_or_create(player: cur_player, dice_count: cur_dice + 1)].concat(f.call(board.drop(1), dice_count - 1))
+            f.call(board.drop(1), dice_count - 1, acc + [DiceOfDoom::Hex.get_or_create(player: cur_player, dice_count: cur_dice + 1)])
           else
-            [board.first].concat(f.call(board.drop(1), dice_count))
+            f.call(board.drop(1), dice_count, acc + [board.first])
           end
         end
       }
-
-      return f.call(@board.map(&:dup), spare_dice)
+      return f.call(@board.map(&:dup), spare_dice, [])
     end
 
     # @return [DiceOfDoom::Tree]
