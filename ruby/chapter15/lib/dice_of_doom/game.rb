@@ -33,9 +33,8 @@ module DiceOfDoom
     def handle_human
       puts
       print "choose your move: "
-      trees = @tree.child_tree
 
-      trees.each_with_index do |tree, index|
+      @tree.child_tree.each_with_index do |tree, index|
         action = tree.move
         puts
         print "#{index + 1}. "
@@ -47,7 +46,7 @@ module DiceOfDoom
       end
 
       puts
-      @tree = trees[gets.chomp.to_i - 1]
+      @tree = @tree.child_tree[gets.chomp.to_i - 1]
     end
 
     def winners
