@@ -7,8 +7,8 @@ class HexTest < Minitest::Test
       player: 1,
       dice_count: 3
     }
-    hex1 = DiceOfDoom::Hex.get_or_create(args)
-    hex2 = DiceOfDoom::Hex.get_or_create(args)
+    hex1 = DiceOfDoom::Hex.get_or_create(**args)
+    hex2 = DiceOfDoom::Hex.get_or_create(**args)
 
     assert_equal true, hex1 == hex2
   end
