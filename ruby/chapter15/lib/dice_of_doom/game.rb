@@ -50,6 +50,7 @@ module DiceOfDoom
       print "choose your move: "
 
       @tree.child_tree.each_with_index do |tree, index|
+        tree = tree.call
         action = tree.move
         puts
         print "#{index + 1}. "
@@ -61,16 +62,16 @@ module DiceOfDoom
       end
 
       puts
-      @tree = @tree.child_tree[gets.chomp.to_i - 1]
+      @tree = @tree.child_tree[gets.chomp.to_i - 1].call
     end
 
     def handle_computer
       ratings = get_ratings(@tree, @tree.player)
-      @tree = tree.child_tree[ratings.index(ratings.max)]
+      @tree = tree.child_tree[ratings.index(ratings.max)].call
     end
 
     def get_ratings(tree, player)
-      tree.child_tree.map { |tree| rate_position(tree, player) }.flatten
+      tree.child_tree.map { |tree| rate_position(tree.call, player) }.flatten
     end
 
     def rate_position(tree, player)
@@ -99,10 +100,11 @@ module DiceOfDoom
 
     def announce_winner
       puts
-      if winners.length > 1
-        puts "The game is a tie between #{winners.map { |w| DiceOfDoom::Player.letter(w) }.join(", ")}"
+      w = winners
+      if w.length > 1
+        puts "The game is a tie between #{w.map { |w| DiceOfDoom::Player.letter(w) }.join(", ")}"
       else
-        puts "The winner is #{DiceOfDoom::Player.letter(winners.first)}"
+        puts "The winner is #{DiceOfDoom::Player.letter(w.first)}"
       end
     end
 
