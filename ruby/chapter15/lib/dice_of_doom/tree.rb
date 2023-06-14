@@ -21,7 +21,7 @@ module DiceOfDoom
 
     # @return [Array<DiceOfDoom::Tree>]
     def attacking_moves
-      (0...DiceOfDoom::BOARD_HEXNUM)
+      (0...BOARD_HEXNUM)
         .select { |src| hex_player(src) == @player }
         .map { |src| attacking_moves_from_src(src) }.flatten
     end
@@ -56,7 +56,7 @@ module DiceOfDoom
         else
           cur_player = board.first.player
           cur_dice = board.first.dice_count
-          if cur_player == @player && cur_dice < DiceOfDoom::MAX_DICE
+          if cur_player == @player && cur_dice < MAX_DICE
             f.call(board.drop(1), dice_count - 1, acc + [DiceOfDoom::Hex.get_or_create(player: cur_player, dice_count: cur_dice + 1)])
           else
             f.call(board.drop(1), dice_count, acc + [board.first])
@@ -69,7 +69,7 @@ module DiceOfDoom
     # @return [DiceOfDoom::Tree]
     def next_turn_tree
       board = add_new_dice(@spare_dice - 1)
-      player = (@player + 1) % DiceOfDoom::NUM_PLAYERS
+      player = (@player + 1) % NUM_PLAYERS
       return delay_create_tree.call(board, player, 0, true, nil)
     end
 

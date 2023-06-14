@@ -1,6 +1,7 @@
 #! /usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require File.expand_path('../config/application.rb', __dir__)
 require 'dice_of_doom'
 
 game = DiceOfDoom::Game.new

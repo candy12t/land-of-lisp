@@ -1,0 +1,8 @@
+default:
+  num_players: 2
+  max_dice: 3
+  board_size: 3
+test:
+  num_players: 2
+  max_dice: 3
+  board_size: 2

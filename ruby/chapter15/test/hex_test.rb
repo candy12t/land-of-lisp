@@ -1,3 +1,4 @@
+require File.expand_path('../config/application.rb', __dir__)
 require 'minitest/autorun'
 require './lib/dice_of_doom'
 

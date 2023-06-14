@@ -4,10 +4,10 @@ module DiceOfDoom
     attr_reader :tree
 
     def initialize
-      # board = Array.new(DiceOfDoom::BOARD_HEXNUM) do |idx|
-      #   player = rand(DiceOfDoom::NUM_PLAYERS)
-      #   dice_count = rand(DiceOfDoom::MAX_DICE) + 1
-      #   DiceOfDoom::Hex.new(player, dice_count)
+      # board = Array.new(BOARD_HEXNUM) do |idx|
+      #   player = rand(NUM_PLAYERS)
+      #   dice_count = rand(MAX_DICE) + 1
+      #   DiceOfDoom::Hex.get_or_create(player: player, dice_count: dice_count)
       # end
       f = ->(p, d) { DiceOfDoom::Hex.get_or_create(player: p, dice_count: d) }
       board = [f.call(0, 3), f.call(0, 3), f.call(1, 3), f.call(1, 1)]

@@ -1,5 +1,21 @@
-require 'minitest/test_task'
+task :test do
+  env = {'APP_ENV' => 'test'}
+  libs = %w(lib test .)
+  test_globs = ['test/**/*_test.rb']
+  warning = true
 
-Minitest::TestTask.create
+  sh(env, "ruby #{build_ruby_test_cmd(libs, test_globs, warning)}")
+end
 
-task default: :test
+def build_ruby_test_cmd(libs, test_globs, warning)
+  tests = Dir[*test_globs].uniq
+  tests.map! { |f| %(require "#{f}") }
+
+  args = []
+  args << "-I#{libs.join(File::PATH_SEPARATOR)}"
+  args << "-w" if warning
+  args << "-e"
+  args << "'#{tests.join("; ")}'"
+
+  return args.join("\s")
+end

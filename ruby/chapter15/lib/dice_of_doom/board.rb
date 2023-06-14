@@ -9,8 +9,8 @@ module DiceOfDoom
       # @return [String]
       def draw(board)
         message = ""
-        board.each_slice(DiceOfDoom::BOARD_SIZE).with_index do |row, idx|
-          message += "\s\s" * (DiceOfDoom::BOARD_SIZE - idx)
+        board.each_slice(BOARD_SIZE).with_index do |row, idx|
+          message += "\s\s" * (BOARD_SIZE - idx)
           row.each do |hex|
             message += "#{DiceOfDoom::Player.letter(hex.player)}-#{hex.dice_count} "
           end
@@ -28,14 +28,14 @@ module DiceOfDoom
       private
 
       def calculate_neighbors(pos)
-        up = pos - DiceOfDoom::BOARD_SIZE
-        down = pos + DiceOfDoom::BOARD_SIZE
+        up = pos - BOARD_SIZE
+        down = pos + BOARD_SIZE
 
         positions = [up, down]
-        positions << pos + 1 unless pos % DiceOfDoom::BOARD_SIZE == DiceOfDoom::BOARD_SIZE - 1
-        positions << pos - 1 unless pos % DiceOfDoom::BOARD_SIZE == 0
+        positions << pos + 1 unless pos % BOARD_SIZE == BOARD_SIZE - 1
+        positions << pos - 1 unless pos % BOARD_SIZE == 0
 
-        return positions.sort.select { |p| p >= 0 && p < DiceOfDoom::BOARD_HEXNUM }
+        return positions.sort.select { |p| p >= 0 && p < BOARD_HEXNUM }
       end
 
     end
