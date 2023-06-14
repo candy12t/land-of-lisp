@@ -6,4 +6,4 @@ env = ENV.fetch('APP_ENV', 'default')
 NUM_PLAYERS = conf[env]['num_players']
 MAX_DICE = conf[env]['max_dice']
 BOARD_SIZE = conf[env]['board_size']
-BOARD_HEXNUM = BOARD_SIZE * BOARD_SIZE
+BOARD_HEXNUM = BOARD_SIZE ** 2
