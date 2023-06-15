@@ -1,3 +1,4 @@
+desc 'run test.'
 task :test do
   env = {'APP_ENV' => 'test'}
   libs = %w(lib test .)
