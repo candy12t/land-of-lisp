@@ -70,22 +70,20 @@ module DiceOfDoom
     def next_turn_tree
       board = add_new_dice(@spare_dice - 1)
       player = (@player + 1) % NUM_PLAYERS
-      return delay_create_tree.call(board, player, 0, true, nil)
+      return delay_create_tree(board, player, 0, true, nil)
     end
 
     # @return [DiceOfDoom::Tree]
     def next_turn_tree_after_attack(src, dst)
       board = board_attack(src, dst, hex_dice(src))
       spare_dice = @spare_dice + hex_dice(dst)
-      return delay_create_tree.call(board, @player, spare_dice, false, [src, dst])
+      return delay_create_tree(board, @player, spare_dice, false, [src, dst])
     end
 
     private
 
-    def delay_create_tree
-      return -> (board, player, spare_dice, first_move, move) do
-        -> { DiceOfDoom::Tree.new(board, player, spare_dice, first_move, move: move) }
-      end
+    def delay_create_tree(board, player, spare_dice, first_move, move)
+      return -> { DiceOfDoom::Tree.new(board, player, spare_dice, first_move, move: move) }
     end
 
     # @return [DiceOfDoom::Player]
