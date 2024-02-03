@@ -1,4 +1,12 @@
 class GuessNumberGame::Command
+  # autoload :Command, 'guess_number_game/command/command'
+  # autoload :UnknownCommand, 'guess_number_game/command/unknown_command'
+  # autoload :Root,    'guess_number_game/command/root'
+  # autoload :Start,   'guess_number_game/command/start'
+
+  # def self.run(argv)
+  #   GuessNumberGame::Command::Root.run(argv)
+  # end
   PROMPT = '> '
 
   def initialize(argv, stdin=$stdin, stdout=$stdout, stderr=$stderr)

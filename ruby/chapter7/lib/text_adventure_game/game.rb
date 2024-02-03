@@ -1,0 +1,2 @@
+module TextAdventureGame::Game
+end
